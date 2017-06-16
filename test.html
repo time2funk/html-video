@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>VIDEO PLAYER POINTER</title>
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<style type="text/css">
+		@pl_color: rgba(255, 0, 0, 0.7);
+
+		::-webkit-media-controls {
+		  display:none !important;
+		}
+		video::-webkit-media-controls {
+		  display:none !important;
+		}
+		body{
+			margin:0;
+		}
+		.video_block{
+		    text-align: center;
+		    padding: 20vh 0;
+		    height: 60vh;		    
+	        background: #111;
+		}
+		#playercontainer{
+			width:100%;
+			height: 100%;
+			position: relative;
+		    -webkit-touch-callout: none;
+		    -webkit-user-select: none;
+		    -khtml-user-select: none;
+		    -moz-user-select: none;
+		    -ms-user-select: none;
+		    user-select: none;
+		}
+		#playercontainer video{
+		    outline: 1px solid gray;
+		    /*object-fit: fill;*/
+	        position:absolute;
+		    left:50%;
+		    top:50%;
+		    -webkit-transform:translate(-50%,-50%);
+		    transform:translate(-50%,-50%);
+		    cursor: pointer;
+		}
+		/*________________________*/
+		#controls {
+			/*position: relative;*/
+			/*bottom: 62px;*/
+		    z-index: 2147483648;
+			position: absolute;
+			bottom: 0;
+			padding-top: 12px;
+			padding-left: 15px;
+			padding-right: 15px;
+			padding-bottom: 30px;
+		    margin-bottom: -1px;
+			width: calc(100% - 30px);
+			height: 50px;
+			background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.6));
+		}
+		#volume_block {
+		    position: absolute;
+		    bottom: 30px;
+		    left: 40px;
+		    color: white;
+		    font-size: 25px;
+		    cursor: pointer;
+		}
+		#volume_block .volumeBar {
+		    width: 0;
+		    height: 30px;
+		    display: block;
+		    position: relative;
+		    left: 0px;
+		    bottom: 0;
+		    /*z-index: -1;*/
+		    background: #494949;
+		}
+		#volume_block:hover .volumeBar{
+			transition: .3s;
+		    margin-left: 40px;
+		    width: 180px;
+		    height: 2px;
+		    padding-top: 14px;
+		    padding-bottom: 14px;
+		    background: rgba(73, 73, 73, 0.37);
+		    border-left: 1px solid white;
+		}
+		.fa-volume-up:before,
+		.fa-volume-off:before {
+		    position: absolute;
+		    left: 0px;
+		    bottom: 0;
+		    padding: 2px;
+		    margin-left: 2px;
+		}
+		#volume_block .volume {
+		    width: 100%;
+		    height: 100%;
+		}
+		#volume_block .fa-volume-up + .volumeBar .volume{
+		    background: #c81515;			
+		}
+		#controls.pausa {
+			transition: .3s;
+		    background: linear-gradient(rgba(0,0,0,0), rgba(0, 0, 0, 0.98));
+		    padding-top: 60px;
+		}
+		#progressholder {
+			height: 10px;
+			border-radius: 4px;
+			/*background: rgba(61, 61, 61, 0.7);*/
+			margin-bottom: 11px;
+			cursor: pointer;
+		}
+		#buffered {
+			height: 3px;
+			border-radius: 4px;
+			background: rgba(160, 160, 160, 0.4);
+			width: 0;
+		}
+		#progress {
+			position: relative;
+			bottom: 3px;
+			height: 3px;
+			border-radius: 4px;
+			background: rgba(255, 0, 0, 0.7);
+			width: 0;
+		}
+		#progressholder:hover #progressorb {
+			display: block;
+		}
+		#progressorb {
+		    position: relative;
+		    display: none;
+		    bottom: 12px;
+		    width: 12px;
+		    height: 12px;
+		    border-radius: 20px;
+		    background: rgb(255, 0, 0);
+		    border: 1px solid rgba(0, 0, 0, 0.7);
+		}
+		#playpause {
+			font-size: 21pt;
+			color: #fff;
+			/*margin-left: 10px;*/
+			cursor: pointer;  
+			padding:5px 10px;
+		    height: 28px;
+		}
+		#playpause:hover {
+			transition: .2s;
+			/*color: #d3d3d3;*/
+			outline:1px solid white;
+			padding:6px 11px;
+			margin:0 20px;
+		}
+		#pull, #push {
+		    color: white;
+		    font-size: 30px;
+		    width: 30px;
+		    height: 35px;
+		    margin: 0 20px;
+		    cursor: pointer;
+		}
+		#pull:hover, #push:hover{
+		    font-size: 34px;
+		    padding: 0 10px;
+		    transition: .1s;
+		}
+		#progresstime {
+			position: relative;
+			right: 45px;
+			top: 3px;
+			font-size: 13pt;
+			color: #fff;
+			/*font-weight: bold;*/
+			float: right;
+		}
+		#fullscreen {
+			position: absolute;
+			right: 165px;
+			bottom: 30px;
+			color: #fff;
+			font-size: 18pt;
+			cursor: pointer;
+		}
+		.pb_block {
+		    background: #000;
+		    color: #fff;
+		    height: 325px;
+		    left: 50%;
+		    margin: -176px 0 0 -172px;
+		    position: absolute;
+		    top: 50%;
+		    width: 340px;
+		    z-index: 3147483650;
+		    display: none;
+	        background: url(poster.jpg);
+    		background-size: cover;
+		}
+		.pb_top {
+		    text-align: center;
+		    border-bottom: 1px solid #61605f;
+		    background: black;
+		}
+		.pb_close {
+		    font-family: monospace;
+		    border: 1px solid red;
+		    color: white;
+		    display: inline-block;
+		    width: 18px;
+		    height: 18px;
+		    font-size: 14px;
+		    /*float: right;*/
+		    cursor: pointer;
+	        position: absolute;
+		    right: 0;
+		    margin: -1px;
+		}
+		.pb_resume {
+		    position: absolute;
+		    display: block;
+		    padding: 10px 0;
+		    border: 1px solid red;
+		    color: white;
+		    bottom: 0;
+		    width: 100%;
+		    height: 20px;
+		    margin-left: -1px;
+		    cursor: pointer;
+	        background: rgba(0, 0, 0, 0.6);
+		}
+		.pb_text{
+	        color: #000000;
+		    text-shadow: -3px -1px 11px white;
+		    font-size: 25px;
+		    font-weight: bold;	
+		}
+	</style>
+
+	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+	<div class="video_block">
+		<div id="playercontainer">	
+			<video id='player'  poster='poster.jpg' >
+				<!-- <video width="720" height="480"  controls> -->
+				<source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+				<source src="https://www.w3schools.com/html/mov_bbb.ogg" type="video/ogg">
+				<source src="video/trailer.webm" type='video/webm; codecs="vp8, vorbis"' />
+				Your browser does not support the video tag.
+			</video>
+			<div id="controls">
+				<div id="progressholder">
+					<div id="buffered"></div>
+					<div id="progress"></div>
+					<div id="progressorb"></div>
+				</div>
+				<div id="pull" class="fa fa-angle-double-left"></div>
+				<div id="playpause" class="fa fa-play"></div>
+				<div id="push" class="fa fa-angle-double-right"></div>
+				<div id="volume_block" class="">
+					<div id="muted" class="fa fa-volume-up"></div>
+					<div class="volumeBar">
+					    <div class="volume"></div>
+					</div>
+				</div>
+
+				<div id="progresstime">loading...</div>
+				<div id="fullscreen" class="fa fa-arrows-alt"></div>
+			</div>
+		</div>
+		<div class="pb_block">
+			<div class='pb_top'>
+				<span>this city needs a hero</span>
+				<div class="pb_close">x</div>
+			</div>
+			<div class="pb_text">
+				<p>Beware  </p>
+				<p>the</p>
+				<p>Batman</p>
+			</div>
+			<div class='pb_resume'>resume</div>
+		</div> 
+	</div>
+		
+</body>
+	<script type="text/javascript">
+// ___________________________________________________
+
+	// =============================================
+	var player = document.getElementById("player");
+    var wnd = document.getElementById('playercontainer');
+    var adv = $('.pb_block');
+    var volume = $('.volumeBar');
+	var full = false;
+	var over = false;
+	var fadeTime;
+	var loadCheck;
+	// =============================================
+
+	function scaleVideo() {
+	 	var style = window.getComputedStyle(wnd, null);
+		var height = parseInt(style.getPropertyValue('height'));
+
+        player.setAttribute('width', 'auto');
+        player.setAttribute('height', height);
+	}
+	function pushVideo(){
+		if(!player.paused){
+			$('#push').css('color','rgba(255, 0, 0, 0.7)');			
+			var time = player.currentTime;
+			player.currentTime = time + 1;
+			$('#push').css('color','white');	
+		}
+	}
+	function pullVideo(){
+		if(!player.paused){
+			$('#pull').css('color','rgba(255, 0, 0, 0.7)');
+			var time = player.currentTime;
+			player.currentTime = time - 1;
+			$('#pull').css('color','white');
+		}
+	}
+	function toggleVideo() {
+		//We're playing
+		if(!player.paused) {
+			$("#controls").show().addClass('pausa');
+			$("#playpause").attr("class", "fa fa-play");
+			player.pause();
+			adv.show();
+		} else {
+			$("#controls").fadeOut("medium").removeClass('pausa');
+			$("#playpause").attr("class", "fa fa-pause");
+			player.play();
+			adv.hide();
+		}
+	}
+	function toggleScreen() {
+		if(!full) setOnFull(player);
+		else setOffFull(wnd);
+		full = !full;
+	} 
+	function setOnFull(element) {
+	  if(element.requestFullscreen) {
+	    element.requestFullscreen();
+	  } else if(element.mozRequestFullScreen) {
+	    element.mozRequestFullScreen();
+	  } else if(element.webkitRequestFullscreen) {
+	    element.webkitRequestFullscreen();
+	  } else if(element.msRequestFullscreen) {
+	    element.msRequestFullscreen();
+	  }
+	}
+	function setOffFull() {
+	  if(document.exitFullscreen) {
+	    document.exitFullscreen();
+	  } else if(document.mozCancelFullScreen) {
+	    document.mozCancelFullScreen();
+	  } else if(document.webkitExitFullscreen) {
+	    document.webkitExitFullscreen();
+	  }
+	}
+	function updateProgress() {
+		var bp = player.buffered.end(player.buffered.length-1) / player.duration;
+		var bw = bp * 100;
+		$("#buffered").css("width", bw + "%");
+		
+		var p = player.currentTime / player.duration;
+		var w = p * 100;
+		$("#progress").css("width", w + "%");
+		
+		updateTime();
+		
+		if(player.ended) {
+			$("#playpause").attr("class", "fa fa-repeat");
+			$("#controls").show();
+			$("#player").css("cursor", "pointer");
+			clearTimeout(fadeTime);
+		}
+	}
+	function updateTime() {
+		$("#progresstime").text(player.currentTime.toString().toHHMMSS() + " / " + player.duration.toString().toHHMMSS());
+	}
+	function updateOrb(e) {
+		var pos = e.pageX - 25;
+		var prop = pos / $("#progressholder").width();
+		var prog = prop * player.duration;
+		$("#progressorb").css("margin-left", pos + "px");
+	}
+
+//  ___________________________________________________	
+
+	$(window).resize( scaleVideo ).resize();
+
+	$(function(){
+
+		$("#player").on("loadeddata", updateTime);
+		
+		setInterval(updateProgress, 100);
+
+		loadCheck = setInterval(function(){
+			if($("#player").get(0).duration > 0){
+				$("#player, #controls").css("pointer-events", "auto");
+				clearInterval(loadCheck);
+			}
+		}, 100);
+
+		$(wnd).mousemove(function() {
+			$("#controls").show();
+			clearTimeout(fadeTime);
+			if(!player.paused) {
+				fadeTime = setTimeout(function() {
+					$("#controls").fadeOut("medium");
+				}, 3000);
+			}
+		});
+
+		$("#progressholder").hover(
+			function(e) { over = true; }, 
+			function() { over = false; }
+		);
+
+		$("#progressholder").click(function(e) {
+			var pos = e.pageX - 25;
+			var prop = (pos + 1) / $("#progressholder").width();
+			var prog = prop * player.duration;
+			player.currentTime = prog;
+			updateProgress();
+		});
+
+		$("#progressholder").mousemove(function(e) { updateOrb(e); });
+
+		String.prototype.toHHMMSS = function () {
+		    var sec_num = parseInt(this, 10);
+		    var minutes = Math.floor(sec_num / 60);
+		    var seconds = sec_num - (minutes * 60);
+			
+		    if (seconds < 10) {seconds = "0"+seconds;}
+		    var time = minutes + ':' + seconds;
+		    return time;
+		};
+
+		$("#playpause").click(toggleVideo);
+
+		$("#player").click(toggleVideo);
+
+		$("#fullscreen").click(toggleScreen);
+// ------adv
+		$('.pb_resume').click(function(){
+			toggleVideo();
+			$(adv).hide();
+		});
+
+		$('.pb_close').click(function(){
+			toggleVideo();
+			$(adv).hide();
+		});
+// --------/
+	    $('body').on('keypress', function(e){
+	    	e.preventDefault();
+
+	    	if(e.key==' ')
+	    		toggleVideo();
+
+	    	if(e.key=='Enter')
+	    		toggleScreen();
+	    });
+	    $('body').on('keydown', function(e){
+	    	if(e.keyCode==39){
+	    		e.preventDefault();
+	    		pushVideo();
+			}
+	    	if(e.keyCode==37){
+	    		e.preventDefault();
+	    		pullVideo();
+	    	}
+	    });
+ 		$('#push').click(pushVideo);
+ 		$('#pull').click(pullVideo);
+	    $("#playercontainer").mousemove(function() {
+			$("#controls").show();
+			clearTimeout(fadeTime);
+			if(!player.paused) {
+				fadeTime = setTimeout(function() {
+					$("#controls").fadeOut("medium");
+				}, 3000);
+			}
+		});
+
+		/////////////////////////////
+		/*
+		video.on('loadedmetadata', function() {
+			console.log("d"+video[0].duration );
+		    // $('.duration').text(video[0].duration);
+		});
+		 
+		//update HTML5 video current play time
+		video.on('timeupdate', function() {
+			console.log("c"+video[0].currentTime );
+		    // $('.current').text(video[0].currentTime);
+		});
+		*/
+		/////////////////////////////
+		$('#muted').click(function() {
+		    player.muted = !player.muted;
+		    if( $('#muted').hasClass('fa-volume-up') ){
+		    	$('#muted').removeClass('fa-volume-up');
+		    	$('#muted').addClass('fa-volume-off');
+		    }else{
+		    	$('#muted').removeClass('fa-volume-off');
+		    	$('#muted').addClass('fa-volume-up');
+		    }
+		    return false;
+		});
+		 
+		//Volume control clicked
+		$('.volumeBar').on('mousedown', function(e) {
+		    var position = e.pageX - volume.offset().left;
+		    var percentage = 100 * position / volume.width();
+		    $('.volume').css('width', percentage+'%');
+		    player.volume = percentage / 100;
+		    if( $('#muted').hasClass('fa-volume-off') ){
+		    	player.muted = !player.muted;
+		    	$('#muted').removeClass('fa-volume-off');
+		    	$('#muted').addClass('fa-volume-up');
+		    }
+		});
+
+	});
+//  ___________________________________________________	
+	</script>
+</html>
